@@ -25,7 +25,7 @@ public class AuthenticateAttribute : ActionFilterAttribute
             token = token
         });
         // var payload = JwtUtils.ValidateJwtToken(token);
-        if (result.Message.response.code == ResultCode.Success)
+        if (result.Message.response.code == ResultCode.OK)
         {
             // attach user to context on successful jwt validation
             var payload = result.Message.response.payload;
