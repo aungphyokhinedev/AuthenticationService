@@ -5,41 +5,23 @@ namespace AuthenticationService.DataAccess
     public class ServiceDataAccess : IDataAccess
     {
         //for dataservice
-        private IRequestClient<GetList> _list;
-        private IRequestClient<AddData> _add;
-        private IRequestClient<RemoveData> _remove;
-        private IRequestClient<UpdateData> _update;
+        private IRequestClient<DataServiceContract> _client;
 
-        
 
-        public ServiceDataAccess(IRequestClient<RemoveData> remove,IRequestClient<GetList> list, IRequestClient<AddData> add,IRequestClient<UpdateData> update)
+
+        public ServiceDataAccess(IRequestClient<DataServiceContract> client)
         {
-            _list = list;
-            _add = add;
-            _remove = remove;
-            _update = update;
+            _client = client;
 
         }
 
         public async Task<ListResponse> GetUsers(int page, int pageSize)
         {
-            var request = new GetRequest{
-                tables="users", pageSize= pageSize, page= page,
-                fields = "id,nrc,mobile_no,createdat",
-                orderBy = "id desc",
-                /*filter = new Filter{
-                    where = "id = 4",
-                    parameters = new Dictionary<string, object>{
-                        {"id" , 4 }
-                    }.toParameterList()
-                }*/
-            };
-           
-           var result = await _list.GetResponse<ListData>(new {request=request});
 
-           // var result = await _db.GetListAsync(request);
-           
-            return  result.Message.response;
+            var contract = new Query("users").Select("name,id").Page(page).Limit(pageSize).Contract();
+            var result = await _client.GetResponse<ListData>(contract);
+
+            return result.Message.response;
         }
     }
 }

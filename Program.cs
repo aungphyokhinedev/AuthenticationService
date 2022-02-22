@@ -1,12 +1,14 @@
 using MassTransit;
 using DataService;
 using TokenService;
+using AuthenticationService;
 using AuthenticationService.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IDataAccess,ServiceDataAccess>();
+builder.Services.AddScoped<IAuthenticate,ServiceAuthenticate>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -14,10 +16,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMassTransit(x =>
             {
-                //x.AddConsumers(Assembly.GetExecutingAssembly());
-
-
-
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(builder.Configuration["RabbitMq:host"], "/", h =>
@@ -29,14 +27,9 @@ builder.Services.AddMassTransit(x =>
                 });
 
                 //data service
-                x.AddRequestClient<AddData>();
-                x.AddRequestClient<UpdateData>();
-                x.AddRequestClient<RemoveData>();
-                x.AddRequestClient<GetList>();
-
+                x.AddRequestClient<DataServiceContract>();        
                 //token service
-                x.AddRequestClient<GetToken>();
-                x.AddRequestClient<ValidateToken>();
+                x.AddRequestClient<TokenServiceContract>();
 
 
             }).AddMassTransitHostedService();
@@ -44,18 +37,9 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-/*if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-*/
 app.UseSwagger();
 app.UseSwaggerUI();
-//app.UseHttpsRedirection();
 
-//app.UseAuthorization();
 
 app.MapControllers();
 
