@@ -28,15 +28,20 @@ public class TestController : ControllerBase
         return "token set in response header!";
     }
 
+    //can add any roles sperated by comman
+    //can initialize this in constructor also
+    private const string roles = Roles.Consumer + "," + "Admin";
 
-    [TypeFilter(typeof(AuthenticateAttribute))]
+    [Allowed(roles)]
+    //for all roles use *
+    //[Allowed("*")]
     [HttpPost]
     public async Task<object> GetList(int page, int pageSize)
     {
         //getting claim from auth filter
         var claim = HttpContext.Claim();
 
-        
+
         var result = await _data.GetUsers(page, pageSize);
         return result;
     }

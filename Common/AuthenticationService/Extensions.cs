@@ -10,9 +10,9 @@ public static partial class Extensions
         return (Claim)context.Items["claim"];
     }
 
-    public static void setClaim(this ActionExecutingContext context, Claim data)
+    public static void setClaim(this HttpContext context, Claim data)
     {
-        context.HttpContext.Items["claim"] = data;
+        context.Items["claim"] = data;
     }
 
     public static void setToken(this HttpResponse response,string token)
